@@ -47,10 +47,6 @@ export class UsersService {
     }
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.usersRepository.find();
-  }
-
   async findOne(user_id: string): Promise<User> {
     return await this.usersRepository.findOne({ USER_USER_ID: user_id });
   }
