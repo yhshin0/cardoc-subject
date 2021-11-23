@@ -5,9 +5,10 @@ import {
   Entity,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import * as bcrypt from 'bcrypt';
-import { USER_CONSTANTS } from '../constants/users.constants';
 import { InternalServerErrorException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
+
+import { USER_CONSTANTS } from '../constants/users.constants';
 
 @Entity()
 export class User {
@@ -24,7 +25,7 @@ export class User {
   USER_CREATED_AT: Date;
 
   @BeforeInsert()
-  async hashPassword() {
+  async hashPassword(): Promise<void> {
     try {
       this.USER_PASSWORD = await bcrypt.hash(
         this.USER_PASSWORD,
