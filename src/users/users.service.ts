@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
@@ -52,5 +53,9 @@ export class UsersService {
 
   async findOne(user_id: string): Promise<User> {
     return await this.usersRepository.findOne({ USER_USER_ID: user_id });
+  }
+
+  async compareHash(user: User, password: string): Promise<boolean> {
+    return await bcrypt.compare(password, user.USER_PASSWORD);
   }
 }
