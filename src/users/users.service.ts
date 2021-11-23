@@ -21,10 +21,12 @@ export class UsersService {
       throw new BadRequestException('해당 ID가 이미 존재합니다');
     }
 
-    return this.usersRepository.save({
-      USER_USER_ID: createUserDto.user_id,
-      USER_PASSWORD: createUserDto.password,
-    });
+    return this.usersRepository.save(
+      this.usersRepository.create({
+        USER_USER_ID: createUserDto.user_id,
+        USER_PASSWORD: createUserDto.password,
+      }),
+    );
   }
 
   findAll() {
