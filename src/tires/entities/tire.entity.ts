@@ -15,13 +15,22 @@ export class Tire {
   TIRE_ID: number;
 
   @Column()
-  TIRE_WIDTH: number;
+  TIRE_FRONT_WIDTH: number;
 
   @Column()
-  TIRE_ASPECT_RATIO: number;
+  TIRE_FRONT_ASPECT_RATIO: number;
 
   @Column()
-  TIRE_WHEEL_SIZE: number;
+  TIRE_FRONT_WHEEL_SIZE: number;
+
+  @Column()
+  TIRE_REAR_WIDTH: number;
+
+  @Column()
+  TIRE_REAR_ASPECT_RATIO: number;
+
+  @Column()
+  TIRE_REAR_WHEEL_SIZE: number;
 
   @CreateDateColumn()
   TIRE_CREATED_AT: Date;
