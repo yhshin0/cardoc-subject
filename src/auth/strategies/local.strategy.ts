@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 
 import { AuthService } from '../auth.service';
+import { AUTH_ERROR_MSG } from '../constants/auth.constants';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -18,7 +19,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     const user = await this.authService.validateUser(loginUserDto);
 
     if (!user) {
-      throw new UnauthorizedException('유효하지 않은 회원 정보입니다');
+      throw new UnauthorizedException(AUTH_ERROR_MSG.INVALID_USER);
     }
     return user;
   }
