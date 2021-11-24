@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HttpService } from '@nestjs/axios';
 import { Repository } from 'typeorm';
@@ -40,10 +40,18 @@ export class TiresService {
       };
     };
 
-    const getError = (err) => ({
-      status: 'error',
-      data: { status: err.response.status, data: err.response.data },
-    });
+    const getError = (err) => {
+      if (err instanceof InternalServerErrorException) {
+        return {
+          status: 'error',
+          data: { message: err.message },
+        };
+      }
+      return {
+        status: 'error',
+        data: err.response.data,
+      };
+    };
 
     return await lastValueFrom(observer).then(getTireInfo).catch(getError);
   }
