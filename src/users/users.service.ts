@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+import { USER_ERROR_MSG } from './constants/users.constants';
 
 @Injectable()
 export class UsersService {
@@ -36,19 +37,11 @@ export class UsersService {
   }
 
   private async checkDuplicateUser(user_id: string): Promise<void> {
-    const user = await this.usersRepository.findOne({
-      where: {
-        USER_USER_ID: user_id,
-      },
-    });
+    const user = await this.findOne(user_id);
 
     if (user) {
-      throw new BadRequestException('해당 ID가 이미 존재합니다');
+      throw new BadRequestException(USER_ERROR_MSG.DUP_ID);
     }
-  }
-
-  async findAll(): Promise<User[]> {
-    return await this.usersRepository.find();
   }
 
   async findOne(user_id: string): Promise<User> {
