@@ -37,11 +37,7 @@ export class UsersService {
   }
 
   private async checkDuplicateUser(user_id: string): Promise<void> {
-    const user = await this.usersRepository.findOne({
-      where: {
-        USER_USER_ID: user_id,
-      },
-    });
+    const user = await this.findOne(user_id);
 
     if (user) {
       throw new BadRequestException(USER_ERROR_MSG.DUP_ID);
