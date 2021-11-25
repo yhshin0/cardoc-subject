@@ -12,6 +12,7 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TIRE_CONSTANTS, TIRE_ERROR_MSG } from './constants/tire.constants';
 import { CreateTireDto } from './dto/create-tire.dto';
+import { Tire } from './entities/tire.entity';
 import { TiresService } from './tires.service';
 
 @UseGuards(JwtAuthGuard)
@@ -24,7 +25,7 @@ export class TiresController {
     @Param('user_id') user_id: string,
     @Query('page') page: string,
     @Query('pageSize') pageSize: string,
-  ) {
+  ): Promise<{ totalCount: number; data: Tire[] }> {
     return await this.tiresService.findByUserId(user_id, +page, +pageSize);
   }
 

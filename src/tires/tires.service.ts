@@ -34,7 +34,7 @@ export class TiresService {
     }
   }
 
-  async create(createTireDto: CreateTireDto) {
+  async create(createTireDto: CreateTireDto): Promise<any> {
     const { trim_id, user_id } = createTireDto;
     const APIresult = await this.getTireInfoFromAPI(trim_id);
 
