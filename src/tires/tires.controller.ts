@@ -52,12 +52,14 @@ export class TiresController {
     };
   }
 
-  private checkArray(body): void {
+  private checkArray(body: any): void {
     if (!(body instanceof Array)) {
       throw new BadRequestException(TIRE_ERROR_MSG.INVALID_INPUT_DATA);
     }
-    if (body.length <= 0 || body.length > 5) {
-      throw new BadRequestException(TIRE_ERROR_MSG.INVALID_INPUT_DATA);
+    if (body.length === 0) {
+      throw new BadRequestException(TIRE_ERROR_MSG.NO_INPUT_DATA);
+    } else if (body.length > TIRE_CONSTANTS.MAX_NUM_OF_INPUT_DATA) {
+      throw new BadRequestException(TIRE_ERROR_MSG.EXCEED_INPUT_DATA);
     }
   }
 }
