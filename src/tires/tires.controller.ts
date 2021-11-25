@@ -17,7 +17,9 @@ export class TiresController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() body): Promise<{ createdTireCount: number }> {
+  async create(
+    @Body() body,
+  ): Promise<{ createdTireCount: number; result: any }> {
     this.checkArrayType(body);
 
     const createdTireList = [];
@@ -29,7 +31,10 @@ export class TiresController {
     }
 
     return {
-      createdTireCount: createdTireList.length,
+      createdTireCount: createdTireList.filter(
+        (item) => item.status === 'success',
+      ).length,
+      result: createdTireList,
     };
   }
 
