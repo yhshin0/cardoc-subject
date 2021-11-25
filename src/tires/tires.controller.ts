@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Param,
   Post,
   Query,
@@ -21,6 +22,7 @@ export class TiresController {
   constructor(private readonly tiresService: TiresService) {}
 
   @Get('/:userId')
+  @HttpCode(200)
   async findByUserId(
     @Param('userId') userId: string,
     @Query('page') page: string,
@@ -30,6 +32,7 @@ export class TiresController {
   }
 
   @Post()
+  @HttpCode(200)
   async create(
     @Body() body,
   ): Promise<{ createdTireCount: number; result: any }> {
