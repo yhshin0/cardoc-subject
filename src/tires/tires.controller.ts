@@ -20,13 +20,13 @@ import { TiresService } from './tires.service';
 export class TiresController {
   constructor(private readonly tiresService: TiresService) {}
 
-  @Get('/:user_id')
+  @Get('/:userId')
   async findByUserId(
-    @Param('user_id') user_id: string,
+    @Param('userId') userId: string,
     @Query('page') page: string,
     @Query('pageSize') pageSize: string,
   ): Promise<{ totalCount: number; data: Tire[] }> {
-    return await this.tiresService.findByUserId(user_id, +page, +pageSize);
+    return await this.tiresService.findByUserId(userId, +page, +pageSize);
   }
 
   @Post()

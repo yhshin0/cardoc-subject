@@ -9,13 +9,13 @@ import { AUTH_ERROR_MSG } from '../constants/auth.constants';
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
     super({
-      usernameField: 'user_id',
+      usernameField: 'userId',
       passwordField: 'password',
     });
   }
 
-  async validate(user_id: string, password: string): Promise<any> {
-    const loginUserDto = { user_id, password };
+  async validate(userId: string, password: string): Promise<any> {
+    const loginUserDto = { userId, password };
     const user = await this.authService.validateUser(loginUserDto);
 
     if (!user) {

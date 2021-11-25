@@ -35,8 +35,8 @@ export class TiresService {
   }
 
   async create(createTireDto: CreateTireDto): Promise<any> {
-    const { trim_id, user_id } = createTireDto;
-    const APIresult = await this.getTireInfoFromAPI(trim_id);
+    const { trimId, userId } = createTireDto;
+    const APIresult = await this.getTireInfoFromAPI(trimId);
 
     try {
       await this.validateCreateTireDto(createTireDto);
@@ -47,23 +47,23 @@ export class TiresService {
 
       const { frontTire, rearTire } = APIresult.data;
       const { ownCar, ...createdTire } = await this.insertTireToTable(
-        trim_id,
-        user_id,
+        trimId,
+        userId,
         frontTire,
         rearTire,
       );
 
       return {
         status: TIRE_CONSTANTS.VALID_TIRE_STATUS,
-        user_id,
-        trim_id,
+        userId,
+        trimId,
         tire: createdTire,
       };
     } catch (error) {
       const result = {
         status: TIRE_CONSTANTS.INVALID_TIRE_STATUS,
-        user_id,
-        trim_id,
+        userId,
+        trimId,
         message: '',
       };
 
@@ -77,8 +77,8 @@ export class TiresService {
   }
 
   private async insertTireToTable(
-    trim_id: number,
-    user_id: string,
+    trimId: number,
+    userId: string,
     frontTire: string,
     rearTire: string,
   ): Promise<Tire> {
@@ -88,10 +88,10 @@ export class TiresService {
     try {
       // 소유 차량 정보 생성
       const createOwnCarDto = new CreateOwnCarDto();
-      createOwnCarDto.trim_id = trim_id;
+      createOwnCarDto.trimId = trimId;
       const createdOwnCar = await this.ownCarsService.create(
         createOwnCarDto,
-        user_id,
+        userId,
       );
 
       // 타이어 스펙 파싱
@@ -122,9 +122,9 @@ export class TiresService {
   }
 
   async getTireInfoFromAPI(
-    trim_id: number,
+    trimId: number,
   ): Promise<{ status: string; data: any }> {
-    const url = TIRE_CONSTANTS.CAR_SPEC_API_URL + trim_id;
+    const url = TIRE_CONSTANTS.CAR_SPEC_API_URL + trimId;
     const observer = this.httpService
       .get(url)
       .pipe(map((axiosResponse) => axiosResponse));
@@ -170,7 +170,7 @@ export class TiresService {
   }
 
   async findByUserId(
-    user_id: string,
+    userId: string,
     page: number,
     pageSize: number,
   ): Promise<{ totalCount: number; data: Tire[] }> {
@@ -184,7 +184,7 @@ export class TiresService {
       .createQueryBuilder('tire')
       .innerJoin('tire.ownCar', 'own_car')
       .innerJoin('own_car.user', 'user')
-      .where('user.user_user_id=:user_id', { user_id })
+      .where('user.USER_USER_ID=:userId', { userId })
       .skip(page * pageSize)
       .take(pageSize)
       .getManyAndCount();

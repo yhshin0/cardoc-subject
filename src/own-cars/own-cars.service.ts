@@ -16,9 +16,9 @@ export class OwnCarsService {
 
   async create(
     createOwnCarDto: CreateOwnCarDto,
-    user_id: string,
+    userId: string,
   ): Promise<OwnCar> {
-    const user = await this.usersService.findOne(user_id);
+    const user = await this.usersService.findOne(userId);
 
     if (!user) {
       throw new BadRequestException(OWN_CAR_ERROR_MSG.NOT_EXIST_USER);
@@ -26,7 +26,7 @@ export class OwnCarsService {
 
     return await this.ownCarsRepository.save(
       this.ownCarsRepository.create({
-        trimId: createOwnCarDto.trim_id,
+        trimId: createOwnCarDto.trimId,
         user,
       }),
     );
