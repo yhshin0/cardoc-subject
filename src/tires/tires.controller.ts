@@ -2,7 +2,10 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
+  Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 
@@ -11,11 +14,20 @@ import { TIRE_CONSTANTS, TIRE_ERROR_MSG } from './constants/tire.constants';
 import { CreateTireDto } from './dto/create-tire.dto';
 import { TiresService } from './tires.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('tires')
 export class TiresController {
   constructor(private readonly tiresService: TiresService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @Get('/:user_id')
+  async findByUserId(
+    @Param('user_id') user_id: string,
+    @Query('page') page: string,
+    @Query('pageSize') pageSize: string,
+  ) {
+    return await this.tiresService.findByUserId(user_id, +page, +pageSize);
+  }
+
   @Post()
   async create(
     @Body() body,
