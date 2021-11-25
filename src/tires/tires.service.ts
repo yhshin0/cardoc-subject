@@ -43,29 +43,13 @@ export class TiresService {
         throw new InternalServerErrorException(APIresult.data.message);
       }
 
-      const createOwnCarDto = new CreateOwnCarDto();
-      createOwnCarDto.trim_id = trim_id;
-      const createdOwnCar = await this.ownCarsService.create(
-        createOwnCarDto,
-        user_id,
-      );
-
       const { frontTire, rearTire } = APIresult.data;
-      const [frontTireWidth, frontTireAspectRatio, frontTireWheelSize] =
-        frontTire.split(TIRE_CONSTANTS.TIRE_SPEC_SPLIT_REGEX);
-      const [rearTireWidth, rearTireAspectRatio, rearTireWheelSize] =
-        rearTire.split(TIRE_CONSTANTS.TIRE_SPEC_SPLIT_REGEX);
-
-      const tire = new Tire();
-      tire.TIRE_FRONT_WIDTH = frontTireWidth;
-      tire.TIRE_FRONT_ASPECT_RATIO = frontTireAspectRatio;
-      tire.TIRE_FRONT_WHEEL_SIZE = frontTireWheelSize;
-      tire.TIRE_REAR_WIDTH = rearTireWidth;
-      tire.TIRE_REAR_ASPECT_RATIO = rearTireAspectRatio;
-      tire.TIRE_REAR_WHEEL_SIZE = rearTireWheelSize;
-      tire.ownCar = createdOwnCar;
-
-      const { ownCar, ...createdTire } = await this.tiresRepository.save(tire);
+      const { ownCar, ...createdTire } = await this.insertTireToTable(
+        trim_id,
+        user_id,
+        frontTire,
+        rearTire,
+      );
 
       return {
         status: TIRE_CONSTANTS.VALID_TIRE_STATUS,
@@ -91,6 +75,39 @@ export class TiresService {
       }
       return result;
     }
+  }
+
+  private async insertTireToTable(
+    trim_id: number,
+    user_id: string,
+    frontTire: string,
+    rearTire: string,
+  ): Promise<Tire> {
+    // 소유 차량 정보 생성
+    const createOwnCarDto = new CreateOwnCarDto();
+    createOwnCarDto.trim_id = trim_id;
+    const createdOwnCar = await this.ownCarsService.create(
+      createOwnCarDto,
+      user_id,
+    );
+
+    // 타이어 스펙 파싱
+    const [frontTireWidth, frontTireAspectRatio, frontTireWheelSize] =
+      frontTire.split(TIRE_CONSTANTS.TIRE_SPEC_SPLIT_REGEX);
+    const [rearTireWidth, rearTireAspectRatio, rearTireWheelSize] =
+      rearTire.split(TIRE_CONSTANTS.TIRE_SPEC_SPLIT_REGEX);
+
+    // 타이어 DB에 데이터 생성
+    const tire = new Tire();
+    tire.TIRE_FRONT_WIDTH = +frontTireWidth;
+    tire.TIRE_FRONT_ASPECT_RATIO = +frontTireAspectRatio;
+    tire.TIRE_FRONT_WHEEL_SIZE = +frontTireWheelSize;
+    tire.TIRE_REAR_WIDTH = +rearTireWidth;
+    tire.TIRE_REAR_ASPECT_RATIO = +rearTireAspectRatio;
+    tire.TIRE_REAR_WHEEL_SIZE = +rearTireWheelSize;
+    tire.ownCar = createdOwnCar;
+
+    return await this.tiresRepository.save(tire);
   }
 
   async getTireInfoFromAPI(
