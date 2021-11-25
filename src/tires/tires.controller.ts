@@ -40,5 +40,8 @@ export class TiresController {
     if (!(body instanceof Array)) {
       throw new BadRequestException(TIRE_ERROR_MSG.INVALID_INPUT_DATA);
     }
+    if (body.length <= 0 || body.length > 5) {
+      throw new BadRequestException(TIRE_ERROR_MSG.INVALID_INPUT_DATA);
+    }
   }
 }
