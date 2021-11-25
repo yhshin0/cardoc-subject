@@ -7,12 +7,8 @@ import { lastValueFrom, map } from 'rxjs';
 import { CreateTireDto } from './dto/create-tire.dto';
 import { Tire } from './entities/tire.entity';
 import { OwnCarsService } from '../own-cars/own-cars.service';
-import { CreateOwnCarDto } from 'src/own-cars/dto/create-own-car.dto';
-
-interface Result {
-  status: string;
-  data: any;
-}
+import { CreateOwnCarDto } from '../own-cars/dto/create-own-car.dto';
+import { TIRE_CONSTANTS } from './constants/tire.constants';
 
 @Injectable()
 export class TiresService {
@@ -26,7 +22,7 @@ export class TiresService {
     const { trim_id, user_id } = createTireDto;
     const APIresult = await this.getTireInfoFromAPI(trim_id);
 
-    if (APIresult.status === 'success') {
+    if (APIresult.status === TIRE_CONSTANTS.VALID_TIRE_STATUS) {
       const createOwnCarDto = new CreateOwnCarDto();
       createOwnCarDto.trim_id = trim_id.toString();
       const createdOwnCar = await this.ownCarsService.create(
@@ -36,9 +32,9 @@ export class TiresService {
 
       const { frontTire, rearTire } = APIresult.data;
       const [frontTireWidth, frontTireAspectRatio, frontTireWheelSize] =
-        frontTire.split(/[\/R]/g);
+        frontTire.split(TIRE_CONSTANTS.TIRE_SPEC_SPLIT_REGEX);
       const [rearTireWidth, rearTireAspectRatio, rearTireWheelSize] =
-        rearTire.split(/[\/R]/g);
+        rearTire.split(TIRE_CONSTANTS.TIRE_SPEC_SPLIT_REGEX);
 
       const tire = new Tire();
       tire.TIRE_FRONT_WIDTH = frontTireWidth;
@@ -51,10 +47,15 @@ export class TiresService {
 
       const { ownCar, ...createdTire } = await this.tiresRepository.save(tire);
 
-      return { status: 'success', user_id, trim_id, tire: createdTire };
-    } else if (APIresult.status === 'error') {
       return {
-        status: 'error',
+        status: TIRE_CONSTANTS.VALID_TIRE_STATUS,
+        user_id,
+        trim_id,
+        tire: createdTire,
+      };
+    } else if (APIresult.status === TIRE_CONSTANTS.INVALID_TIRE_STATUS) {
+      return {
+        status: TIRE_CONSTANTS.INVALID_TIRE_STATUS,
         user_id,
         trim_id,
         message: APIresult.data.message,
@@ -62,8 +63,10 @@ export class TiresService {
     }
   }
 
-  async getTireInfoFromAPI(trim_id: number): Promise<Result> {
-    const url = `https://dev.mycar.cardoc.co.kr/v1/trim/${trim_id}`;
+  async getTireInfoFromAPI(
+    trim_id: number,
+  ): Promise<{ status: string; data: any }> {
+    const url = TIRE_CONSTANTS.CAR_SPEC_API_URL + trim_id;
     const observer = this.httpService
       .get(url)
       .pipe(map((axiosResponse) => axiosResponse));
@@ -79,13 +82,13 @@ export class TiresService {
       validateTire(rearTire, 'rear');
 
       return {
-        status: 'success',
+        status: TIRE_CONSTANTS.VALID_TIRE_STATUS,
         data: { frontTire, rearTire },
       };
     };
 
     const validateTire = (tire, tireType) => {
-      if (tire.search(/^[0-9]{3}\/[0-9]{2}R[0-9]{2}/g) === -1) {
+      if (tire.search(TIRE_CONSTANTS.TIRE_FORMAT_REGEX) === -1) {
         throw new InternalServerErrorException(
           `invalid ${tireType} tire format(${tire})`,
         );
@@ -95,12 +98,12 @@ export class TiresService {
     const getError = (err) => {
       if (err instanceof InternalServerErrorException) {
         return {
-          status: 'error',
+          status: TIRE_CONSTANTS.INVALID_TIRE_STATUS,
           data: { message: err.message },
         };
       }
       return {
-        status: 'error',
+        status: TIRE_CONSTANTS.INVALID_TIRE_STATUS,
         data: err.response.data,
       };
     };
