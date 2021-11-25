@@ -174,8 +174,11 @@ export class TiresService {
     page: number,
     pageSize: number,
   ): Promise<{ totalCount: number; data: Tire[] }> {
-    page = isNaN(page) || page <= 0 ? 0 : page - 1;
-    pageSize = isNaN(pageSize) || pageSize <= 0 ? 5 : pageSize;
+    page = isNaN(page) || page <= 0 ? TIRE_CONSTANTS.DEFAULT_PAGE : page - 1;
+    pageSize =
+      isNaN(pageSize) || pageSize <= 0
+        ? TIRE_CONSTANTS.DEFAULT_PAGE_SIZE
+        : pageSize;
 
     const tireList = await this.tiresRepository
       .createQueryBuilder('tire')
