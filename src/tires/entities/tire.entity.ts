@@ -9,31 +9,31 @@ import {
 
 import { OwnCar } from '../../own-cars/entities/own-car.entity';
 
-@Entity()
+@Entity({ name: 'TIRE' })
 export class Tire {
-  @PrimaryGeneratedColumn()
-  TIRE_ID: number;
+  @PrimaryGeneratedColumn({ name: 'TIRE_ID' })
+  id: number;
 
-  @Column()
-  TIRE_FRONT_WIDTH: number;
+  @Column({ name: 'TIRE_FRONT_WIDTH' })
+  frontWidth: number;
 
-  @Column()
-  TIRE_FRONT_ASPECT_RATIO: number;
+  @Column({ name: 'TIRE_FRONT_ASPECT_RATIO' })
+  frontAspectRatio: number;
 
-  @Column()
-  TIRE_FRONT_WHEEL_SIZE: number;
+  @Column({ name: 'TIRE_FRONT_WHEEL_SIZE' })
+  frontWheelSize: number;
 
-  @Column()
-  TIRE_REAR_WIDTH: number;
+  @Column({ name: 'TIRE_REAR_WIDTH' })
+  rearWidth: number;
 
-  @Column()
-  TIRE_REAR_ASPECT_RATIO: number;
+  @Column({ name: 'TIRE_REAR_ASPECT_RATIO' })
+  rearAspectRatio: number;
 
-  @Column()
-  TIRE_REAR_WHEEL_SIZE: number;
+  @Column({ name: 'TIRE_REAR_WHEEL_SIZE' })
+  rearWheelSize: number;
 
-  @CreateDateColumn()
-  TIRE_CREATED_AT: Date;
+  @CreateDateColumn({ name: 'TIRE_CREATED_AT' })
+  createdAt: Date;
 
   @OneToOne(() => OwnCar)
   @JoinColumn({ name: 'OWN_CAR_ID' })

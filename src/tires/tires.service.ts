@@ -102,12 +102,12 @@ export class TiresService {
 
       // 타이어 DB에 데이터 생성
       const tire = new Tire();
-      tire.TIRE_FRONT_WIDTH = +frontTireWidth;
-      tire.TIRE_FRONT_ASPECT_RATIO = +frontTireAspectRatio;
-      tire.TIRE_FRONT_WHEEL_SIZE = +frontTireWheelSize;
-      tire.TIRE_REAR_WIDTH = +rearTireWidth;
-      tire.TIRE_REAR_ASPECT_RATIO = +rearTireAspectRatio;
-      tire.TIRE_REAR_WHEEL_SIZE = +rearTireWheelSize;
+      tire.frontWidth = +frontTireWidth;
+      tire.frontAspectRatio = +frontTireAspectRatio;
+      tire.frontWheelSize = +frontTireWheelSize;
+      tire.rearWidth = +rearTireWidth;
+      tire.rearAspectRatio = +rearTireAspectRatio;
+      tire.rearWheelSize = +rearTireWheelSize;
       tire.ownCar = createdOwnCar;
 
       const res = await this.tiresRepository.save(tire);

@@ -26,7 +26,7 @@ export class OwnCarsService {
 
     return await this.ownCarsRepository.save(
       this.ownCarsRepository.create({
-        OWN_CAR_TRIM_ID: createOwnCarDto.trim_id,
+        trimId: createOwnCarDto.trim_id,
         user,
       }),
     );

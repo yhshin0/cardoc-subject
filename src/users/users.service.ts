@@ -23,8 +23,8 @@ export class UsersService {
 
       return await this.usersRepository.save(
         this.usersRepository.create({
-          USER_USER_ID: createUserDto.user_id,
-          USER_PASSWORD: createUserDto.password,
+          userId: createUserDto.user_id,
+          password: createUserDto.password,
         }),
       );
     } catch (error) {
@@ -45,10 +45,10 @@ export class UsersService {
   }
 
   async findOne(user_id: string): Promise<User> {
-    return await this.usersRepository.findOne({ USER_USER_ID: user_id });
+    return await this.usersRepository.findOne({ userId: user_id });
   }
 
   async compareHash(user: User, password: string): Promise<boolean> {
-    return await bcrypt.compare(password, user.USER_PASSWORD);
+    return await bcrypt.compare(password, user.password);
   }
 }
