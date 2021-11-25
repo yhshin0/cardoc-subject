@@ -20,7 +20,7 @@ export class TiresController {
   async create(
     @Body() body,
   ): Promise<{ createdTireCount: number; result: any }> {
-    this.checkArrayType(body);
+    this.checkArray(body);
 
     const createdTireList = [];
     for (const elem of body) {
@@ -36,7 +36,7 @@ export class TiresController {
     };
   }
 
-  private checkArrayType(body): void {
+  private checkArray(body): void {
     if (!(body instanceof Array)) {
       throw new BadRequestException(TIRE_ERROR_MSG.INVALID_INPUT_DATA);
     }
