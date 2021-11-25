@@ -168,4 +168,27 @@ export class TiresService {
 
     return await lastValueFrom(observer).then(getTireInfo).catch(getError);
   }
+
+  async findByUserId(
+    user_id: string,
+    page: number,
+    pageSize: number,
+  ): Promise<{ totalCount: number; data: Tire[] }> {
+    page = isNaN(page) || page <= 0 ? TIRE_CONSTANTS.DEFAULT_PAGE : page - 1;
+    pageSize =
+      isNaN(pageSize) || pageSize <= 0
+        ? TIRE_CONSTANTS.DEFAULT_PAGE_SIZE
+        : pageSize;
+
+    const tireList = await this.tiresRepository
+      .createQueryBuilder('tire')
+      .innerJoin('tire.ownCar', 'own_car')
+      .innerJoin('own_car.user', 'user')
+      .where('user.user_user_id=:user_id', { user_id })
+      .skip(page * pageSize)
+      .take(pageSize)
+      .getManyAndCount();
+
+    return { totalCount: tireList[1], data: tireList[0] };
+  }
 }
