@@ -19,7 +19,7 @@ export class OwnCar {
   user: User;
 
   @Column()
-  OWN_CAR_TRIM_ID: string;
+  OWN_CAR_TRIM_ID: number;
 
   @CreateDateColumn()
   OWN_CAR_CREATED_AT: Date;

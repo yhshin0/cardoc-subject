@@ -10,5 +10,6 @@ import { UsersModule } from '../users/users.module';
   imports: [TypeOrmModule.forFeature([OwnCar]), UsersModule],
   providers: [OwnCarsService],
   controllers: [OwnCarsController],
+  exports: [OwnCarsService],
 })
 export class OwnCarsModule {}
