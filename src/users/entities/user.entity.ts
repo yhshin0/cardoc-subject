@@ -12,28 +12,28 @@ import * as bcrypt from 'bcrypt';
 import { USER_CONSTANTS } from '../constants/users.constants';
 import { OwnCar } from '../../own-cars/entities/own-car.entity';
 
-@Entity()
+@Entity({ name: 'USER' })
 export class User {
-  @PrimaryGeneratedColumn()
-  USER_ID: number;
+  @PrimaryGeneratedColumn({ name: 'USER_ID' })
+  id: number;
 
-  @Column({ unique: true })
-  USER_USER_ID: string;
+  @Column({ unique: true, name: 'USER_USER_ID' })
+  userId: string;
 
-  @Column()
-  USER_PASSWORD: string;
+  @Column({ name: 'USER_PASSWORD' })
+  password: string;
 
-  @CreateDateColumn()
-  USER_CREATED_AT: Date;
+  @CreateDateColumn({ name: 'USER_CREATED_AT' })
+  createdAt: Date;
 
-  @OneToMany(() => OwnCar, (ownCar) => ownCar.OWN_CAR_ID, { eager: false })
+  @OneToMany(() => OwnCar, (ownCar) => ownCar.id, { eager: false })
   ownCars: OwnCar[];
 
   @BeforeInsert()
   async hashPassword(): Promise<void> {
     try {
-      this.USER_PASSWORD = await bcrypt.hash(
-        this.USER_PASSWORD,
+      this.password = await bcrypt.hash(
+        this.password,
         USER_CONSTANTS.SALT_ROUND,
       );
     } catch (error) {

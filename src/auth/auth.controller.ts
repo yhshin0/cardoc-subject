@@ -1,4 +1,11 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
@@ -13,6 +20,7 @@ export class AuthController {
   ) {}
 
   @Post('/signup')
+  @HttpCode(200)
   async signup(
     @Body() createUserDto: CreateUserDto,
   ): Promise<{ access_token: string }> {
@@ -22,6 +30,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/signin')
+  @HttpCode(200)
   async signin(@Request() req): Promise<{ access_token: string }> {
     return this.authService.signin(req.user);
   }

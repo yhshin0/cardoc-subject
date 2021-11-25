@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Param,
   Post,
   Query,
@@ -12,6 +13,7 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TIRE_CONSTANTS, TIRE_ERROR_MSG } from './constants/tire.constants';
 import { CreateTireDto } from './dto/create-tire.dto';
+import { Tire } from './entities/tire.entity';
 import { TiresService } from './tires.service';
 
 @UseGuards(JwtAuthGuard)
@@ -19,16 +21,18 @@ import { TiresService } from './tires.service';
 export class TiresController {
   constructor(private readonly tiresService: TiresService) {}
 
-  @Get('/:user_id')
+  @Get('/:userId')
+  @HttpCode(200)
   async findByUserId(
-    @Param('user_id') user_id: string,
+    @Param('userId') userId: string,
     @Query('page') page: string,
     @Query('pageSize') pageSize: string,
-  ) {
-    return await this.tiresService.findByUserId(user_id, +page, +pageSize);
+  ): Promise<{ totalCount: number; data: Tire[] }> {
+    return await this.tiresService.findByUserId(userId, +page, +pageSize);
   }
 
   @Post()
+  @HttpCode(200)
   async create(
     @Body() body,
   ): Promise<{ createdTireCount: number; result: any }> {
@@ -48,12 +52,14 @@ export class TiresController {
     };
   }
 
-  private checkArray(body): void {
+  private checkArray(body: any): void {
     if (!(body instanceof Array)) {
       throw new BadRequestException(TIRE_ERROR_MSG.INVALID_INPUT_DATA);
     }
-    if (body.length <= 0 || body.length > 5) {
-      throw new BadRequestException(TIRE_ERROR_MSG.INVALID_INPUT_DATA);
+    if (body.length === 0) {
+      throw new BadRequestException(TIRE_ERROR_MSG.NO_INPUT_DATA);
+    } else if (body.length > TIRE_CONSTANTS.MAX_NUM_OF_INPUT_DATA) {
+      throw new BadRequestException(TIRE_ERROR_MSG.EXCEED_INPUT_DATA);
     }
   }
 }

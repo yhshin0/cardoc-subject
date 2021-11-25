@@ -1,14 +1,14 @@
 import { IsNumber, IsString } from 'class-validator';
 
 export class CreateTireDto {
-  constructor({ user_id, trim_id }) {
-    this.user_id = user_id;
-    this.trim_id = trim_id;
+  constructor({ userId, trimId }) {
+    this.userId = userId;
+    this.trimId = trimId;
   }
 
   @IsString()
-  user_id: string;
+  userId: string;
 
   @IsNumber()
-  trim_id: number;
+  trimId: number;
 }

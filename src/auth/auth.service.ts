@@ -13,19 +13,19 @@ export class AuthService {
   ) {}
 
   async validateUser(loginUserDto: LoginUserDto): Promise<any> {
-    const user = await this.usersService.findOne(loginUserDto.user_id);
+    const user = await this.usersService.findOne(loginUserDto.userId);
     if (
       user &&
       (await this.usersService.compareHash(user, loginUserDto.password))
     ) {
-      const { USER_PASSWORD, ...result } = user;
+      const { password, ...result } = user;
       return result;
     }
     return null;
   }
 
   async signin(user: User): Promise<{ access_token: string }> {
-    const payload = { user_id: user.USER_USER_ID };
+    const payload = { userId: user.userId };
     return {
       access_token: this.jwtService.sign(payload),
     };

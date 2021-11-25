@@ -19,12 +19,12 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
-      await this.checkDuplicateUser(createUserDto.user_id);
+      await this.checkDuplicateUser(createUserDto.userId);
 
       return await this.usersRepository.save(
         this.usersRepository.create({
-          USER_USER_ID: createUserDto.user_id,
-          USER_PASSWORD: createUserDto.password,
+          userId: createUserDto.userId,
+          password: createUserDto.password,
         }),
       );
     } catch (error) {
@@ -36,19 +36,19 @@ export class UsersService {
     }
   }
 
-  private async checkDuplicateUser(user_id: string): Promise<void> {
-    const user = await this.findOne(user_id);
+  private async checkDuplicateUser(userId: string): Promise<void> {
+    const user = await this.findOne(userId);
 
     if (user) {
-      throw new BadRequestException(USER_ERROR_MSG.DUP_ID);
+      throw new BadRequestException(USER_ERROR_MSG.DUPLICATE_USER_ID);
     }
   }
 
-  async findOne(user_id: string): Promise<User> {
-    return await this.usersRepository.findOne({ USER_USER_ID: user_id });
+  async findOne(userId: string): Promise<User> {
+    return await this.usersRepository.findOne({ userId });
   }
 
   async compareHash(user: User, password: string): Promise<boolean> {
-    return await bcrypt.compare(password, user.USER_PASSWORD);
+    return await bcrypt.compare(password, user.password);
   }
 }
