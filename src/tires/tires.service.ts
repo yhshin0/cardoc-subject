@@ -1,11 +1,12 @@
 import {
   BadRequestException,
+  HttpException,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HttpService } from '@nestjs/axios';
-import { Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import { lastValueFrom, map } from 'rxjs';
 import { validate } from 'class-validator';
 
@@ -21,6 +22,7 @@ export class TiresService {
     @InjectRepository(Tire) private tiresRepository: Repository<Tire>,
     private httpService: HttpService,
     private ownCarsService: OwnCarsService,
+    private connection: Connection,
   ) {}
 
   private async validateCreateTireDto(
@@ -65,10 +67,7 @@ export class TiresService {
         message: '',
       };
 
-      if (
-        error instanceof InternalServerErrorException ||
-        error instanceof BadRequestException
-      ) {
+      if (error instanceof HttpException) {
         result.message = error.message;
       } else {
         result.message = APIresult.data.message;
@@ -83,31 +82,43 @@ export class TiresService {
     frontTire: string,
     rearTire: string,
   ): Promise<Tire> {
-    // 소유 차량 정보 생성
-    const createOwnCarDto = new CreateOwnCarDto();
-    createOwnCarDto.trim_id = trim_id;
-    const createdOwnCar = await this.ownCarsService.create(
-      createOwnCarDto,
-      user_id,
-    );
+    const queryRunner = this.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      // 소유 차량 정보 생성
+      const createOwnCarDto = new CreateOwnCarDto();
+      createOwnCarDto.trim_id = trim_id;
+      const createdOwnCar = await this.ownCarsService.create(
+        createOwnCarDto,
+        user_id,
+      );
 
-    // 타이어 스펙 파싱
-    const [frontTireWidth, frontTireAspectRatio, frontTireWheelSize] =
-      frontTire.split(TIRE_CONSTANTS.TIRE_SPEC_SPLIT_REGEX);
-    const [rearTireWidth, rearTireAspectRatio, rearTireWheelSize] =
-      rearTire.split(TIRE_CONSTANTS.TIRE_SPEC_SPLIT_REGEX);
+      // 타이어 스펙 파싱
+      const [frontTireWidth, frontTireAspectRatio, frontTireWheelSize] =
+        frontTire.split(TIRE_CONSTANTS.TIRE_SPEC_SPLIT_REGEX);
+      const [rearTireWidth, rearTireAspectRatio, rearTireWheelSize] =
+        rearTire.split(TIRE_CONSTANTS.TIRE_SPEC_SPLIT_REGEX);
 
-    // 타이어 DB에 데이터 생성
-    const tire = new Tire();
-    tire.TIRE_FRONT_WIDTH = +frontTireWidth;
-    tire.TIRE_FRONT_ASPECT_RATIO = +frontTireAspectRatio;
-    tire.TIRE_FRONT_WHEEL_SIZE = +frontTireWheelSize;
-    tire.TIRE_REAR_WIDTH = +rearTireWidth;
-    tire.TIRE_REAR_ASPECT_RATIO = +rearTireAspectRatio;
-    tire.TIRE_REAR_WHEEL_SIZE = +rearTireWheelSize;
-    tire.ownCar = createdOwnCar;
+      // 타이어 DB에 데이터 생성
+      const tire = new Tire();
+      tire.TIRE_FRONT_WIDTH = +frontTireWidth;
+      tire.TIRE_FRONT_ASPECT_RATIO = +frontTireAspectRatio;
+      tire.TIRE_FRONT_WHEEL_SIZE = +frontTireWheelSize;
+      tire.TIRE_REAR_WIDTH = +rearTireWidth;
+      tire.TIRE_REAR_ASPECT_RATIO = +rearTireAspectRatio;
+      tire.TIRE_REAR_WHEEL_SIZE = +rearTireWheelSize;
+      tire.ownCar = createdOwnCar;
 
-    return await this.tiresRepository.save(tire);
+      const res = await this.tiresRepository.save(tire);
+      await queryRunner.commitTransaction();
+      return res;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException();
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async getTireInfoFromAPI(

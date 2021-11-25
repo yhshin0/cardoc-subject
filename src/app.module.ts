@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { OwnCarsModule } from './own-cars/own-cars.module';
 import { TiresModule } from './tires/tires.module';
+import { Connection } from 'typeorm';
 
 @Module({
   imports: [
@@ -29,4 +30,6 @@ import { TiresModule } from './tires/tires.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private connection: Connection) {}
+}
