@@ -40,7 +40,7 @@ export class UsersService {
     const user = await this.findOne(user_id);
 
     if (user) {
-      throw new BadRequestException(USER_ERROR_MSG.DUP_ID);
+      throw new BadRequestException(USER_ERROR_MSG.DUPLICATE_USER_ID);
     }
   }
 
