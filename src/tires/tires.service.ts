@@ -24,7 +24,7 @@ export class TiresService {
 
     if (APIresult.status === TIRE_CONSTANTS.VALID_TIRE_STATUS) {
       const createOwnCarDto = new CreateOwnCarDto();
-      createOwnCarDto.trim_id = trim_id.toString();
+      createOwnCarDto.trim_id = trim_id;
       const createdOwnCar = await this.ownCarsService.create(
         createOwnCarDto,
         user_id,

@@ -1,6 +1,6 @@
-import { IsString } from 'class-validator';
+import { IsNumber } from 'class-validator';
 
 export class CreateOwnCarDto {
-  @IsString()
-  trim_id: string;
+  @IsNumber()
+  trim_id: number;
 }
