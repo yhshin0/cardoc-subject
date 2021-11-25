@@ -1,14 +1,19 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HttpService } from '@nestjs/axios';
 import { Repository } from 'typeorm';
 import { lastValueFrom, map } from 'rxjs';
+import { validate } from 'class-validator';
 
 import { CreateTireDto } from './dto/create-tire.dto';
 import { Tire } from './entities/tire.entity';
 import { OwnCarsService } from '../own-cars/own-cars.service';
 import { CreateOwnCarDto } from '../own-cars/dto/create-own-car.dto';
-import { TIRE_CONSTANTS } from './constants/tire.constants';
+import { TIRE_CONSTANTS, TIRE_ERROR_MSG } from './constants/tire.constants';
 
 @Injectable()
 export class TiresService {
@@ -18,11 +23,26 @@ export class TiresService {
     private ownCarsService: OwnCarsService,
   ) {}
 
+  private async validateCreateTireDto(
+    createTireDto: CreateTireDto,
+  ): Promise<void> {
+    const res = await validate(createTireDto);
+    if (res.length > 0) {
+      throw new BadRequestException(TIRE_ERROR_MSG.INVALID_INPUT_DATA);
+    }
+  }
+
   async create(createTireDto: CreateTireDto) {
     const { trim_id, user_id } = createTireDto;
     const APIresult = await this.getTireInfoFromAPI(trim_id);
 
-    if (APIresult.status === TIRE_CONSTANTS.VALID_TIRE_STATUS) {
+    try {
+      await this.validateCreateTireDto(createTireDto);
+
+      if (APIresult.status !== TIRE_CONSTANTS.VALID_TIRE_STATUS) {
+        throw new InternalServerErrorException(APIresult.data.message);
+      }
+
       const createOwnCarDto = new CreateOwnCarDto();
       createOwnCarDto.trim_id = trim_id;
       const createdOwnCar = await this.ownCarsService.create(
@@ -53,13 +73,23 @@ export class TiresService {
         trim_id,
         tire: createdTire,
       };
-    } else if (APIresult.status === TIRE_CONSTANTS.INVALID_TIRE_STATUS) {
-      return {
+    } catch (error) {
+      const result = {
         status: TIRE_CONSTANTS.INVALID_TIRE_STATUS,
         user_id,
         trim_id,
-        message: APIresult.data.message,
+        message: '',
       };
+
+      if (
+        error instanceof InternalServerErrorException ||
+        error instanceof BadRequestException
+      ) {
+        result.message = error.message;
+      } else {
+        result.message = APIresult.data.message;
+      }
+      return result;
     }
   }
 

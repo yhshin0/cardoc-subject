@@ -5,9 +5,9 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { validate } from 'class-validator';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { TIRE_CONSTANTS, TIRE_ERROR_MSG } from './constants/tire.constants';
 import { CreateTireDto } from './dto/create-tire.dto';
 import { TiresService } from './tires.service';
 
@@ -25,14 +25,12 @@ export class TiresController {
     const createdTireList = [];
     for (const elem of body) {
       const createTireDto = new CreateTireDto({ ...elem });
-      await this.validateCreateTireDto(createTireDto);
-
       createdTireList.push(await this.tiresService.create(createTireDto));
     }
 
     return {
       createdTireCount: createdTireList.filter(
-        (item) => item.status === 'success',
+        (item) => item.status === TIRE_CONSTANTS.VALID_TIRE_STATUS,
       ).length,
       result: createdTireList,
     };
@@ -40,16 +38,7 @@ export class TiresController {
 
   private checkArrayType(body): void {
     if (!(body instanceof Array)) {
-      throw new BadRequestException('입력 정보가 잘못되었습니다');
-    }
-  }
-
-  private async validateCreateTireDto(
-    createTireDto: CreateTireDto,
-  ): Promise<void> {
-    const res = await validate(createTireDto);
-    if (res.length > 0) {
-      throw new BadRequestException('입력 정보가 잘못되었습니다');
+      throw new BadRequestException(TIRE_ERROR_MSG.INVALID_INPUT_DATA);
     }
   }
 }
