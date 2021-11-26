@@ -115,13 +115,13 @@ export class TiresService {
       return res;
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(error.message);
     } finally {
       await queryRunner.release();
     }
   }
 
-  async getTireInfoFromAPI(
+  private async getTireInfoFromAPI(
     trimId: number,
   ): Promise<{ status: string; data: any }> {
     const url = TIRE_CONSTANTS.CAR_SPEC_API_URL + trimId;
