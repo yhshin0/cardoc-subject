@@ -93,7 +93,7 @@ describe('TiresService', () => {
         data: { frontTire, rearTire },
       };
       jest
-        .spyOn(tiresService, 'getTireInfoFromAPI')
+        .spyOn(TiresService.prototype as any, 'getTireInfoFromAPI')
         .mockResolvedValue(validAPIResult);
 
       jest
@@ -138,7 +138,7 @@ describe('TiresService', () => {
         data: { frontTire, rearTire },
       };
       jest
-        .spyOn(tiresService, 'getTireInfoFromAPI')
+        .spyOn(TiresService.prototype as any, 'getTireInfoFromAPI')
         .mockResolvedValue(validAPIResult);
 
       jest
@@ -174,7 +174,7 @@ describe('TiresService', () => {
         data: { code: invalidAPICode, message: invalidAPIMessage },
       };
       jest
-        .spyOn(tiresService, 'getTireInfoFromAPI')
+        .spyOn(TiresService.prototype as any, 'getTireInfoFromAPI')
         .mockResolvedValue(invalidAPIResult);
 
       jest
@@ -203,7 +203,7 @@ describe('TiresService', () => {
         data: { message: invalidAPIMessage },
       };
       jest
-        .spyOn(tiresService, 'getTireInfoFromAPI')
+        .spyOn(TiresService.prototype as any, 'getTireInfoFromAPI')
         .mockResolvedValue(invalidAPIResult);
 
       jest
@@ -233,7 +233,7 @@ describe('TiresService', () => {
         data: { frontTire, rearTire },
       };
       jest
-        .spyOn(tiresService, 'getTireInfoFromAPI')
+        .spyOn(TiresService.prototype as any, 'getTireInfoFromAPI')
         .mockResolvedValue(validAPIResult);
 
       jest

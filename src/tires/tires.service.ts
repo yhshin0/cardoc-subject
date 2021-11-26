@@ -121,7 +121,7 @@ export class TiresService {
     }
   }
 
-  async getTireInfoFromAPI(
+  private async getTireInfoFromAPI(
     trimId: number,
   ): Promise<{ status: string; data: any }> {
     const url = TIRE_CONSTANTS.CAR_SPEC_API_URL + trimId;
