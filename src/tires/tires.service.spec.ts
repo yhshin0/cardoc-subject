@@ -1,9 +1,13 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException } from '@nestjs/common';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Connection, QueryRunner, Repository } from 'typeorm';
 
+import { OWN_CAR_ERROR_MSG } from '../own-cars/constants/own-cars.constants';
 import { OwnCar } from '../own-cars/entities/own-car.entity';
 import { OwnCarsService } from '../own-cars/own-cars.service';
 import { TIRE_CONSTANTS, TIRE_ERROR_MSG } from './constants/tire.constants';
@@ -118,6 +122,42 @@ describe('TiresService', () => {
         trimId,
         tire: createdTire,
       };
+      const result = await tiresService.create(createTireDto);
+      expect(result).toMatchObject(expectResult);
+    });
+
+    it('존재하지 않는 userId가 입력되어 타이어 정보 생성에 실패한다', async () => {
+      const userId = 'notExistUser';
+      const trimId = 1;
+      const createTireDto = new CreateTireDto({ userId, trimId });
+
+      const frontTire = '225/40R18';
+      const rearTire = '225/40R18';
+      const validAPIResult = {
+        status: TIRE_CONSTANTS.VALID_TIRE_STATUS,
+        data: { frontTire, rearTire },
+      };
+      jest
+        .spyOn(tiresService, 'getTireInfoFromAPI')
+        .mockResolvedValue(validAPIResult);
+
+      jest
+        .spyOn(TiresService.prototype as any, 'validateCreateTireDto')
+        .mockResolvedValue(undefined);
+
+      jest
+        .spyOn(TiresService.prototype as any, 'insertTireToTable')
+        .mockRejectedValue(
+          new InternalServerErrorException(OWN_CAR_ERROR_MSG.NOT_EXIST_USER),
+        );
+
+      const expectResult = {
+        status: TIRE_CONSTANTS.INVALID_TIRE_STATUS,
+        userId,
+        trimId,
+        message: OWN_CAR_ERROR_MSG.NOT_EXIST_USER,
+      };
+
       const result = await tiresService.create(createTireDto);
       expect(result).toMatchObject(expectResult);
     });
