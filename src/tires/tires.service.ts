@@ -115,7 +115,7 @@ export class TiresService {
       return res;
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(error.message);
     } finally {
       await queryRunner.release();
     }
