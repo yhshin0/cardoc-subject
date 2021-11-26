@@ -58,6 +58,7 @@ describe('UsersService', () => {
       jest.spyOn(usersService, 'findOne').mockResolvedValue(user);
 
       jest.spyOn(usersService, 'compareHash').mockResolvedValue(true);
+
       const result = await authService.validateUser(loginUserDto);
       expect(result.id).toEqual(id);
       expect(result.userId).toEqual(userId);
@@ -80,6 +81,7 @@ describe('UsersService', () => {
       user.userId = userId;
       user.password = userPassword;
       user.createdAt = createdAt;
+
       jest.spyOn(usersService, 'findOne').mockResolvedValue(user);
 
       jest.spyOn(usersService, 'compareHash').mockResolvedValue(false);

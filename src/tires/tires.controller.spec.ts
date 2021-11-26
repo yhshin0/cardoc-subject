@@ -49,14 +49,11 @@ describe('TiresController', () => {
         tire.createdAt = createdAt;
         tireList.push(tire);
       }
-      const result = { totalCount: tireList.length, data: tireList };
+      const expectResult = { totalCount: tireList.length, data: tireList };
 
-      jest.spyOn(tiresService, 'findByUserId').mockResolvedValue(result);
-      const expectResult = await tiresController.findByUserId(
-        userId,
-        page,
-        pageSize,
-      );
+      jest.spyOn(tiresService, 'findByUserId').mockResolvedValue(expectResult);
+
+      const result = await tiresController.findByUserId(userId, page, pageSize);
       expect(result).toMatchObject(expectResult);
     });
   });
@@ -95,6 +92,7 @@ describe('TiresController', () => {
         createdTireCount: createdTireList.length,
         result: createdTireList,
       };
+
       const result = await tiresController.create(body);
       expect(result).toMatchObject(expectResult);
     });
@@ -192,6 +190,7 @@ describe('TiresController', () => {
         ).length,
         result: createdTireList,
       };
+
       const result = await tiresController.create(body);
       expect(result).toMatchObject(expectResult);
     });

@@ -57,20 +57,15 @@ describe('UsersService', () => {
     user.createdAt = createdAt;
 
     it('유저 생성에 성공한다', async () => {
-      expect.assertions(4);
-
       jest
         .spyOn(UsersService.prototype as any, 'checkDuplicateUser')
         .mockResolvedValue(undefined);
 
       jest.spyOn(usersRepository, 'save').mockResolvedValue(user);
       jest.spyOn(usersRepository, 'create').mockResolvedValue(user);
-      const expectUser = await usersService.create(createUserDto);
+      const resultUser = await usersService.create(createUserDto);
 
-      expect(expectUser.id).toEqual(user.id);
-      expect(expectUser.userId).toEqual(user.userId);
-      expect(expectUser.password).toEqual(user.password);
-      expect(expectUser.createdAt).toEqual(user.createdAt);
+      expect(resultUser).toMatchObject(user);
     });
 
     it('아이디가 중복되어 유저 생성에 실패한다', async () => {
@@ -83,7 +78,7 @@ describe('UsersService', () => {
         );
 
       try {
-        const expectUser = await usersService.create(createUserDto);
+        const resultUser = await usersService.create(createUserDto);
       } catch (error) {
         expect(error).toBeInstanceOf(BadRequestException);
         expect(error.message).toEqual(USER_ERROR_MSG.DUPLICATE_USER_ID);
@@ -93,7 +88,6 @@ describe('UsersService', () => {
 
   describe('findOne', () => {
     it('유저 조회에 성공한다', async () => {
-      expect.assertions(4);
       const userId = 'testuser';
       const password = 'password';
       const id = 1;
@@ -107,12 +101,9 @@ describe('UsersService', () => {
 
       jest.spyOn(usersRepository, 'findOne').mockResolvedValue(user);
 
-      const expectUser = await usersService.findOne(userId);
+      const resultUser = await usersService.findOne(userId);
 
-      expect(expectUser.id).toEqual(user.id);
-      expect(expectUser.userId).toEqual(user.userId);
-      expect(expectUser.password).toEqual(user.password);
-      expect(expectUser.createdAt).toEqual(user.createdAt);
+      expect(resultUser).toMatchObject(user);
     });
   });
 

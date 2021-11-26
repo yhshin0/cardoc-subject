@@ -122,6 +122,7 @@ describe('TiresService', () => {
         trimId,
         tire: createdTire,
       };
+
       const result = await tiresService.create(createTireDto);
       expect(result).toMatchObject(expectResult);
     });
@@ -247,6 +248,7 @@ describe('TiresService', () => {
         trimId,
         message: TIRE_ERROR_MSG.INVALID_INPUT_DATA,
       };
+
       const result = await tiresService.create(createTireDto);
       expect(result).toMatchObject(expectResult);
     });

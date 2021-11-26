@@ -57,8 +57,6 @@ describe('OwnCarsService', () => {
     const userId = 'testuser';
 
     it('소유 자동차 정보 생성에 성공한다', async () => {
-      expect.assertions(7);
-
       const id = 1;
       const password = 'password';
       const createdAt = new Date();
@@ -80,14 +78,8 @@ describe('OwnCarsService', () => {
       jest.spyOn(ownCarsRepository, 'create').mockReturnValue(ownCar);
       jest.spyOn(ownCarsRepository, 'save').mockResolvedValue(ownCar);
 
-      const expectOwnCar = await ownCarsService.create(createOwnCarDto, userId);
-      expect(expectOwnCar.id).toEqual(ownCar.id);
-      expect(expectOwnCar.trimId).toEqual(ownCar.trimId);
-      expect(expectOwnCar.createdAt).toEqual(ownCar.createdAt);
-      expect(expectOwnCar.user.id).toEqual(ownCar.user.id);
-      expect(expectOwnCar.user.userId).toEqual(ownCar.user.userId);
-      expect(expectOwnCar.user.password).toEqual(ownCar.user.password);
-      expect(expectOwnCar.user.createdAt).toEqual(ownCar.user.createdAt);
+      const resultOwnCar = await ownCarsService.create(createOwnCarDto, userId);
+      expect(resultOwnCar).toMatchObject(ownCar);
     });
 
     it('회원이 존재하지 않아 소유 자동차 정보 생성에 실패한다', async () => {
@@ -95,7 +87,7 @@ describe('OwnCarsService', () => {
       jest.spyOn(usersService, 'findOne').mockResolvedValue(undefined);
 
       try {
-        const expectOwnCar = await ownCarsService.create(
+        const resultOwnCar = await ownCarsService.create(
           createOwnCarDto,
           userId,
         );
