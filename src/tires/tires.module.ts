@@ -11,7 +11,10 @@ import { OwnCarsModule } from '../own-cars/own-cars.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Tire]),
-    HttpModule,
+    HttpModule.register({
+      timeout: 5000,
+      maxRedirects: 5,
+    }),
     UsersModule,
     OwnCarsModule,
   ],
