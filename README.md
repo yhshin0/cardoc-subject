@@ -108,16 +108,18 @@ https://documenter.getpostman.com/view/18183669/UVJbHdG1
 
 3. `npm build` 명령으로 프로젝트를 빌드합니다.
 
-4. .env 파일을 작성하여 dist 폴더로 이동시킵니다. 해당 파일에는 JWT_SECRET(jwt secret 값), JWT_EXPIRATION(토큰 만료 시간)을 정의합니다.
+4. .env 파일을 작성하여 dist 폴더로 이동시킵니다. 해당 파일에는 PORT(실행시킬 PORT 값), JWT_SECRET(jwt secret 값), JWT_EXPIRATION(토큰 만료 시간)을 정의합니다.
 
     .env
     ```
+    PORT=3000
     JWT_SECRET=1q2w3e4r
     JWT_EXPIRATION=1h
     ```
 
-    또는 JWT_SECRET, JWT_EXPIRATION을 환경변수로 등록합니다.
+    또는 PORT, JWT_SECRET, JWT_EXPIRATION을 환경변수로 등록합니다.
     ```
+    $ export PORT=3000
     $ export JWT_SECRET=1q2w3e4r
     $ export JWT_EXPIRATION=1h
     ```
